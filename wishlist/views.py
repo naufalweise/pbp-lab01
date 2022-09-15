@@ -19,3 +19,7 @@ def get_xml(request):
 def get_json(request):
 	data = BarangWishlist.objects.all()
 	return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+	
+def get_json_by_id(request, id):
+	data = BarangWishlist.objects.filter(pk=id)
+	return HttpResponse(serializers.serialize("json", data), content_type="application/json")
