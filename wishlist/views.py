@@ -70,10 +70,3 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('wishlist:login'))
     response.delete_cookie('last_login')
     return response
-
-# def last_login(request):
-# 	if user is not None:
-#     	login(request, user) # melakukan login terlebih dahulu
-# 		response = HttpResponseRedirect(reverse("wishlist:show_wishlist")) # membuat response
-# 		response.set_cookie('last_login', str(datetime.datetime.now())) # membuat cookie last_login dan menambahkannya ke dalam response
-# 		return response
