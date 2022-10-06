@@ -3,20 +3,20 @@
 {% block content %}
 <h5>Nama: <b>{{nama}}</b></h5>
 
-<form id="create-wishlist-form" action="{% url 'wishlist:create_wishlist' %}" onsubmit="submitFormWishlist(event)">
+<form id="create-wishlist-form"  onsubmit="submitFormWishlist(event)">
     {% csrf_token %}
-<h3>Create wishlist</h3>
+    <h3>Create wishlist</h3>
   <div class="mb-3">
     <label for="nama_barang" class="form-label">Nama Barang</label>
-    <input type="text" name="nama_barang" class="form-control" >
+    <input type="text" name="nama_barang" class="form-control" placeholder="Nama barang" >
   </div>
   <div class="mb-3">
     <label for="harga_barang" class="form-label">Harga</label>
-    <input type="number" name="harga_barang" class="form-control">
+    <input type="number" name="harga_barang" class="form-control" placeholder="Harga barang">
   </div>
   <div class="mb-3">
     <label for="deskripsi" class="form-label">Deskripsi</label>
-    <textarea class="form-control" nama="deskripsi"></textarea>
+    <input class="form-control" name="deskripsi" placeholder="deskripsi">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
@@ -47,34 +47,8 @@
 {% endblock content %}
 {% block script %}
 <script>
-    $.ajaxSetup({
-        headers: { "X-CSRFToken": getCookie("csrftoken") }
-    });
-    function submitFormWishlist(event) {
 
-        event.preventDefault();
-        
-        const form = $(this);
-        const actionUrl = form.attr('action');
-
-        $.ajax({
-        type: "POST",
-        url: actionUrl,
-        data: {... form.serialize(), csrfmiddlewaretoken: '{{csrf_token}}'},
-        }).done(function (data) {
-        refreshTable();
-        });
-    }
-  
-    const dataUrl = "{% url 'wishlist:get_json' %}";
-    const data = $.getJSON({
-        url: dataUrl
-    }, function (data) {
-        console.log(data);
-        refreshTable(data);
-
-    });
-    const refreshTable = (items) => {
+    function renderTable(items) {
 
         const tbody = $('#wishlist-table > tbody');
         tbody.empty();
@@ -86,8 +60,36 @@
                 row.append($("<td>").append(item.fields[field]));
             })
             tbody.append(row);
-        })
+        });
 
     }
+
+    function submitFormWishlist(event) {
+
+        event.preventDefault();
+        
+        const form = $("#create-wishlist-form");
+        const actionUrl = "{% url 'wishlist:create' %}";
+        console.log("form serial", form.serialize())
+
+        $.ajax({
+            type: "POST",
+            url: actionUrl,
+            data: form.serialize(),
+        }).done(function (data) {
+            refreshTable();
+        });
+    }
+  
+    function refreshTable() {
+        const dataUrl = "{% url 'wishlist:get_json' %}";
+        const data = $.getJSON({
+            url: dataUrl
+        }, function (data) {
+            console.log(data);
+            renderTable(data);
+        });
+    }
+    $(document).ready(() => refreshTable())
 </script>
 {% endblock script %}

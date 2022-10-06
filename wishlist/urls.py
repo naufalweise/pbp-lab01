@@ -13,5 +13,5 @@ urlpatterns = [
     path('login/', views.login_user, name='login'),
     path('logout/', views.logout_user, name='logout'),
     path('ajax/', views.show_wishlist_ajax, name='ajax'),
-    path('create/', views.create_wishlist, name="create_wishlist"),
+    path('create/', views.create_wishlist, name="create"),
 ]
