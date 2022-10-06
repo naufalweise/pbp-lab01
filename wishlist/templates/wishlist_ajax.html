@@ -1,0 +1,56 @@
+
+{% extends 'wishlist/base.html' %}
+{% block content %}
+<h5>Nama: <b>{{nama}}</b></h5>
+
+<table class="table" id="wishlist-table">
+    <thead>
+        <tr>
+            <th>Nama Barang</th>
+            <th>Harga Barang</th>
+            <th>Deskripsi</th>
+        </tr>
+    </thead>
+    {% comment %} Tambahkan data di bawah baris ini {% endcomment %}
+    <tbody>
+
+    </tbody>
+    {% for barang in list_barang %}
+        <tr>
+            <td>{{barang.nama_barang}}</td>
+            <td>{{barang.harga_barang}}</td>
+            <td>{{barang.deskripsi}}</td>
+        </tr>
+    {% endfor %}
+
+</table>
+<h5>Last Login: {{ last_login }}</h5>
+
+{% endblock content %}
+{% block script %}
+<script>
+    const dataUrl = "{% url 'wishlist:get_json' %}";
+    const data = $.getJSON({
+        url: dataUrl
+    }, function (data) {
+        console.log(data);
+        refreshTable(data);
+
+    });
+    const refreshTable = (items) => {
+
+        const tbody = $('#wishlist-table > tbody');
+        tbody.empty();
+
+        items.forEach(item => {
+            const row = $("<tr>");
+            const fieldsToShow = ["nama_barang", "harga_barang", "deskripsi"];
+            fieldsToShow.forEach(field => {
+                row.append($("<td>").append(item.fields[field]));
+            })
+            tbody.append(row);
+        })
+
+    }
+</script>
+{% endblock script %}
