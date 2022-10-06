@@ -6,9 +6,11 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from wishlist.forms import WishlistForm
 from wishlist.models import BarangWishlist
 from django.http import HttpResponse
 from django.core import serializers
+from django.views.decorators.http import require_POST
 
 @login_required(login_url='/wishlist/login/')
 def show_wishlist(request):
@@ -26,6 +28,7 @@ def show_wishlist_ajax(request):
     context = {
         'nama': 'Weise',
         'last_login': request.COOKIES['last_login'],
+        'form': WishlistForm()
     }
     return render(request, "wishlist_ajax.html", context)
 
@@ -79,3 +82,11 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('wishlist:login'))
     response.delete_cookie('last_login')
     return response
+
+@require_POST
+def create_wishlist(request):
+    form = WishlistForm(request.POST)
+    if form.is_valid():
+        form.save()
+    return HttpResponse(status=200)
+    

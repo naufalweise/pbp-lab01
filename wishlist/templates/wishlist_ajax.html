@@ -3,6 +3,24 @@
 {% block content %}
 <h5>Nama: <b>{{nama}}</b></h5>
 
+<form id="create-wishlist-form" action="{% url 'wishlist:create_wishlist' %}" onsubmit="submitFormWishlist(event)">
+    {% csrf_token %}
+<h3>Create wishlist</h3>
+  <div class="mb-3">
+    <label for="nama_barang" class="form-label">Nama Barang</label>
+    <input type="text" name="nama_barang" class="form-control" >
+  </div>
+  <div class="mb-3">
+    <label for="harga_barang" class="form-label">Harga</label>
+    <input type="number" name="harga_barang" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label for="deskripsi" class="form-label">Deskripsi</label>
+    <textarea class="form-control" nama="deskripsi"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
 <table class="table" id="wishlist-table">
     <thead>
         <tr>
@@ -29,6 +47,25 @@
 {% endblock content %}
 {% block script %}
 <script>
+    $.ajaxSetup({
+        headers: { "X-CSRFToken": getCookie("csrftoken") }
+    });
+    function submitFormWishlist(event) {
+
+        event.preventDefault();
+        
+        const form = $(this);
+        const actionUrl = form.attr('action');
+
+        $.ajax({
+        type: "POST",
+        url: actionUrl,
+        data: {... form.serialize(), csrfmiddlewaretoken: '{{csrf_token}}'},
+        }).done(function (data) {
+        refreshTable();
+        });
+    }
+  
     const dataUrl = "{% url 'wishlist:get_json' %}";
     const data = $.getJSON({
         url: dataUrl
